@@ -38,8 +38,8 @@ kdat = kick[["country", "id", "main", "sub", "staff_pick", "backers_count",
              "usd_pledged", "state"]]
 
 
-kdat.staff_pick.loc["false"] = False
-kdat.staff_pick.loc["true"] = True
+#kdat.staff_pick[kdat.staff_pick == "false"] = False
+#kdat.staff_pick[kdat.staff_pick == "true"] = True
 
 #clean some columns
 kdat["launch_year"] = kdat.launched_at.apply(
@@ -52,7 +52,7 @@ kdat["end_month"] = kdat.deadline.apply(
     datetime.datetime.fromtimestamp).dt.month
 kdat["duration"] = (kdat.deadline.apply(datetime.datetime.fromtimestamp) -
                     kdat.launched_at.apply(
-                        datetime.datetime.fromtimestamp)).days
+                        datetime.datetime.fromtimestamp)).dt.days
 
 #take residuals of converted_pledge~usd
 results = sm.ols(formula='converted_pledged_amount~usd_pledged',
@@ -93,23 +93,23 @@ def kickstarter():
         goal = request.form['goal']
         error = None
 
-        if launch_month not in np.arange(1,13) & launch_month != "None":
+        if launch_month not in np.arange(1,13) and launch_month != "None":
             error = 'Please enter launch month as a number from 1 to 12, ' \
                     'or enter "None".'
 
-        elif main not in kdat.main & main != "None":
+        elif main not in kdat.main and main != "None":
             error = 'Invalid Main Category. Please check your spelling, ' \
                     'or enter "None".'
 
-        elif sub not in kdat.sub & sub != "None":
+        elif sub not in kdat.sub and sub != "None":
             error = 'Invalid Sub-category. Please check your spelling, ' \
                     'or enter "None".'
 
-        elif not isinstance(camp_dur, int) & camp_dur != "None":
+        elif not isinstance(camp_dur, int) and camp_dur != "None":
             error = 'Invalid Campaign Duration. Please enter an integer, ' \
                     'or enter "None".'
 
-        elif not isinstance(goal, int) & goal != "None":
+        elif not isinstance(goal, int) and goal != "None":
             error = 'Invalid Goal Amount. Please enter an integer, ' \
                     'or enter "None".'
         if error is None:
@@ -123,7 +123,7 @@ def kickstarter():
             if launch_month != "None":
                 data = data.loc[data.launch_month == launch_month]
             if goal != "None":
-                data = data.loc[data.goal <= 1.1*goal & data.goal >= .9*goal]
+                data = data.loc[data.goal <= 1.1*goal and data.goal >= .9*goal]
 
             # Delete rows with duplicate IDs
             data = data.drop_duplicates(subset="id")
