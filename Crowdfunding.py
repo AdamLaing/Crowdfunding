@@ -4,6 +4,9 @@ import datetime
 import statsmodels.formula.api as sm
 from flask import Flask, render_template, request, redirect, flash
 from wtforms import Form, TextAreaField, validators, StringField, SubmitField
+from bokeh.io import show, output_file
+from bokeh.models import ColumnDataSource, FactorRange
+from bokeh.plotting import figure
 
 DEBUG = True
 app = Flask(__name__)
@@ -46,6 +49,7 @@ kdat["launch_year"] = kdat.launched_at.apply(
     datetime.datetime.fromtimestamp).dt.year
 kdat["launch_month"] = kdat.launched_at.apply(
     datetime.datetime.fromtimestamp).dt.month
+kdat["launch_quarter"] = ((kdat.launch_month+.6)/3).round().astype(int)
 kdat["end_year"] = kdat.deadline.apply(
     datetime.datetime.fromtimestamp).dt.year
 kdat["end_month"] = kdat.deadline.apply(
@@ -127,11 +131,13 @@ def kickstarter():
 
             # Delete rows with duplicate IDs
             data = data.drop_duplicates(subset="id")
+			
+			
 
-            p = figure(plot_width=400, plot_height=400, x_axis_type='datetime')
+            p = figure(plot_width=400, plot_height=400)
 
             # add a line renderer
-            p.line(data['date'], data['close'], line_width=2)
+            #p.line(data['date'], data['close'], line_width=2)
 
             script, div = components(p)
             flash('[Placeholder Text')
